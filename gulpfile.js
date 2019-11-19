@@ -42,7 +42,7 @@ const compile = modules => {
 
   const source = ['src/**/*.tsx', 'src/**/*.ts', 'src/**/*.d.ts'];
   if (tsConfig.allowJs) {
-    source.unshift('src/**/*.jsx', 'src/**/*.js');
+    source.unshift('src/**/*.jsx', 'src/**/*.js','!src/**/*.test.js');
   }
   let error = 0;
   function check() {

@@ -1,24 +1,24 @@
 {
-  "name": "table-builder",
-  "version": "1.2.3",
-  "description": "a table builder",
+  "name": "mergeable-table",
+  "version": "1.0.0",
+  "description": "a mergeable table ",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
-    "dist",
     "lib",
     "es"
   ],
   "scripts": {
     "build": "yarn build:gulp",
     "build:dist": "webpack --config webpack.config.js",
+    "clean":"rimraf ./es && rimraf ./lib",
     "build:gulp": "gulp",
     "build:watch": "gulp watch",
-    "prepublish": "yarn build"
+    "prepare": "yarn build"
   },
   "repository": {
     "type": "git",
-    "url": "http://zxwei@192.10.169.200:8888/zxwei/table-builder.git"
+    "url": "http://zxwei@192.10.169.200:8888/zxwei/mergeable-table.git"
   },
   "author": "jaryway",
   "license": "ISC",
