@@ -1,0 +1,28 @@
+.mergeable-table-component {
+  width: 100%;
+  // padding: 60px;
+  overflow: auto;
+  .mergeable-table {
+    // width: 800px;
+    min-width: 100%;
+    border-collapse: collapse;
+    color: rgb(165, 165, 165);
+
+    th {
+      border: solid 1px #ddd;
+      background-color: #999999;
+      padding: 2px 8px;
+      color: #3e5365;
+    }
+
+    td {
+      border: solid 1px #ddd;
+      min-width: 120px;
+      height: 50px;
+      text-align: center;
+      &.selected {
+        background-color: #d4f1ff;
+      }
+    }
+  }
+}
