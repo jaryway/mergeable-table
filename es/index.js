@@ -24,22 +24,22 @@ var __rest = this && this.__rest || function (s, e) {
   return t;
 };
 
-import './style';
-import React, { useState, useEffect } from 'react';
-import classnames from 'classnames';
-import useTable from './hooks/useTable';
-import { getKey, getHeadChar, BUTTON_CODE } from './utils'; // const noop = () => {};
+import "./style";
+import React, { useState, useEffect } from "react";
+import classnames from "classnames";
+import useTable from "./hooks/useTable";
+import { getKey, getHeadChar, BUTTON_CODE } from "./utils";
+export { default as Preview } from "./Preview"; // const noop = () => {};
 // let instanceRef = React.createRef();
 
 var getWidth = function getWidth(v) {
   return isNaN(Number(v)) ? v : "".concat(Number(v), "px");
 };
 
-function TableBuilder(_ref) {
+function MergeableTable(_ref) {
   var _ref$showHeader = _ref.showHeader,
       showHeader = _ref$showHeader === void 0 ? true : _ref$showHeader,
       data = _ref.data,
-      readOnly = _ref.readOnly,
       onChange = _ref.onChange;
 
   var _useTable = useTable(data, onChange),
@@ -53,10 +53,7 @@ function TableBuilder(_ref) {
 
   var columns = new Array(data.cols).fill(1);
   return React.createElement("div", {
-    className: "mergeable-table-component",
-    style: {
-      zIndex: 200
-    }
+    className: "mergeable-table-component"
   }, React.createElement("table", {
     className: "mergeable-table"
   }, showHeader && React.createElement("thead", null, React.createElement("tr", null, columns.map(function (_cell, j) {
@@ -85,27 +82,12 @@ function TableBuilder(_ref) {
       var colWidth = getWidth((data.style || {})[j]);
       var colStyle = colWidth ? {
         width: colWidth
-      } : {}; // console.log('cell', colStyle, data.style);
-
-      if (readOnly) {
-        return React.createElement("td", _extends({
-          style: _extends({}, colStyle),
-          "data-id": cell.id,
-          key: "".concat(i, "-").concat(j),
-          className: classnames({
-            selected: selected
-          })
-        }, {
-          rowSpan: rowSpan,
-          colSpan: colSpan
-        }), cell.render && cell.render(cell));
-      }
-
+      } : {};
       return React.createElement(_Dropdown, {
         key: "".concat(i, "-").concat(j),
         disabled: !selected,
         overlay: getOverlay(cell),
-        trigger: ['contextMenu']
+        trigger: ["contextMenu"]
       }, React.createElement("td", _extends({
         style: _extends({}, colStyle),
         "data-id": cell.id,
@@ -145,7 +127,7 @@ export default function (_a) {
       rest = __rest(_a, ["config", "defaultConfig", "onChange"]);
 
   if (config) {
-    return React.createElement(TableBuilder, _extends({}, rest, {
+    return React.createElement(MergeableTable, _extends({}, rest, {
       data: config,
       onChange: onChange
     }));
@@ -165,7 +147,7 @@ export default function (_a) {
     onChange && onChange(changedValue);
   };
 
-  return React.createElement(TableBuilder, _extends({}, rest, {
+  return React.createElement(MergeableTable, _extends({}, rest, {
     data: _data,
     onChange: _onChange
   }));

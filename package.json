@@ -23,7 +23,7 @@
   "author": "jaryway",
   "license": "ISC",
   "peerDependencies": {
-    "antd": "3.20.0",
+    "antd": "^3.20.0",
     "classnames": "^2.2.6",
     "immutability-helper": "^3.0.1",
     "react": "^16.10.2",
@@ -74,7 +74,7 @@
   },
   "dependencies": {
     "@types/classnames": "^2.2.9",
-    "antd": "3.20.0",
+    "antd": "^3.25.2",
     "gulp-typescript": "^5.0.1",
     "mergeable-table": "^1.0.1",
     "typescript": "^3.6.4"
