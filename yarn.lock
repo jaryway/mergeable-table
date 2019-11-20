@@ -4327,6 +4327,16 @@ merge2@^1.3.0:
   resolved "https://registry.npm.taobao.org/merge2/download/merge2-1.3.0.tgz#5b366ee83b2f1582c48f87e47cf1a9352103ca81"
   integrity sha1-WzZu6DsvFYLEj4fkfPGpNSEDyoE=
 
+mergeable-table@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mergeable-table/-/mergeable-table-1.0.1.tgz#87e587de2c6eac7d7d768d281101e0a8b004893d"
+  integrity sha512-Vrox/DMKQFW6dkx4Fb0H7we3pA+S9iQNOGm/IHCDtJufHR1hsV1b6zNn+rf0eIeaC71Oz/KSNYH5q3c8dKXVPg==
+  dependencies:
+    "@types/classnames" "^2.2.9"
+    antd "3.20.0"
+    gulp-typescript "^5.0.1"
+    typescript "^3.6.4"
+
 micromatch@^3.0.4, micromatch@^3.1.10, micromatch@^3.1.4:
   version "3.1.10"
   resolved "https://registry.npm.taobao.org/micromatch/download/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
