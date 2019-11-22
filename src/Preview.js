@@ -1,9 +1,6 @@
 import "./style";
 import React from "react";
-// import classnames from "classnames";
-
-// import { Dropdown } from 'antd';
-// import useTable from './hooks/useTable';
+import classnames from "classnames";
 import { getKey, getHeadChar } from "./utils";
 
 const getWidth = v => (isNaN(Number(v)) ? v : `${Number(v)}px`);
@@ -12,7 +9,7 @@ function MergeableTable({ showHeader = true, data }) {
   const columns = new Array(data.cols).fill(1);
 
   return (
-    <div className="mergeable-table-component">
+    <div className={classnames("mergeable-table-component", rest.className)}>
       <table className="mergeable-table">
         {showHeader && (
           <thead>

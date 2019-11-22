@@ -36,11 +36,12 @@ var getWidth = function getWidth(v) {
   return isNaN(Number(v)) ? v : "".concat(Number(v), "px");
 };
 
-function MergeableTable(_ref) {
-  var _ref$showHeader = _ref.showHeader,
-      showHeader = _ref$showHeader === void 0 ? true : _ref$showHeader,
-      data = _ref.data,
-      onChange = _ref.onChange;
+function MergeableTable(_a) {
+  var _a$showHeader = _a.showHeader,
+      showHeader = _a$showHeader === void 0 ? true : _a$showHeader,
+      data = _a.data,
+      onChange = _a.onChange,
+      rest = __rest(_a, ["showHeader", "data", "onChange"]);
 
   var _useTable = useTable(data, onChange),
       mouse = _useTable.mouse,
@@ -52,9 +53,9 @@ function MergeableTable(_ref) {
       getOverlay = _useTable.getOverlay;
 
   var columns = new Array(data.cols).fill(1);
-  return React.createElement("div", {
-    className: "mergeable-table-component"
-  }, React.createElement("table", {
+  return React.createElement("div", _extends({}, rest, {
+    className: classnames("mergeable-table-component", rest.className)
+  }), React.createElement("table", {
     className: "mergeable-table"
   }, showHeader && React.createElement("thead", null, React.createElement("tr", null, columns.map(function (_cell, j) {
     return React.createElement("th", {
