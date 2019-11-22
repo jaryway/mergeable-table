@@ -5,11 +5,14 @@ import { getKey, getHeadChar } from "./utils";
 
 const getWidth = v => (isNaN(Number(v)) ? v : `${Number(v)}px`);
 
-function MergeableTable({ showHeader = true, data }) {
+function MergeableTable({ showHeader = true, data, ...rest }) {
   const columns = new Array(data.cols).fill(1);
 
   return (
-    <div className={classnames("mergeable-table-component", rest.className)}>
+    <div
+      {...rest}
+      className={classnames("mergeable-table-component", rest.className)}
+    >
       <table className="mergeable-table">
         {showHeader && (
           <thead>

@@ -14,10 +14,8 @@ var __rest = this && this.__rest || function (s, e) {
 };
 
 import "./style";
-import React from "react"; // import classnames from "classnames";
-// import { Dropdown } from 'antd';
-// import useTable from './hooks/useTable';
-
+import React from "react";
+import classnames from "classnames";
 import { getKey, getHeadChar } from "./utils";
 
 var getWidth = function getWidth(v) {
@@ -30,7 +28,7 @@ function MergeableTable(_ref) {
       data = _ref.data;
   var columns = new Array(data.cols).fill(1);
   return React.createElement("div", {
-    className: "mergeable-table-component"
+    className: classnames("mergeable-table-component", rest.className)
   }, React.createElement("table", {
     className: "mergeable-table"
   }, showHeader && React.createElement("thead", null, React.createElement("tr", null, columns.map(function (_cell, j) {
