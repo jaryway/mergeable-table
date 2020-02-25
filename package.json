@@ -74,9 +74,7 @@
   },
   "dependencies": {
     "@types/classnames": "^2.2.9",
-    "antd": "^3.25.2",
     "gulp-typescript": "^5.0.1",
-    "mergeable-table": "^1.0.1",
     "typescript": "^3.6.4"
   }
 }
