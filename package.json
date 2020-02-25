@@ -1,6 +1,6 @@
 {
   "name": "mergeable-table",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "a mergeable table ",
   "main": "lib/index.js",
   "module": "es/index.js",
