@@ -9,12 +9,14 @@
     "es"
   ],
   "scripts": {
+    "start1": "cd ./example/ && webpack",
+    "start": "webpack-dev-server --open --watch --config ./example/webpack.config.js",
     "build": "yarn build:gulp",
     "build:dist": "webpack --config webpack.config.js",
     "clean": "rimraf ./es && rimraf ./lib",
     "build:gulp": "gulp",
     "build:watch": "gulp watch",
-    "prepare": "yarn build"
+    "prepublishOnly": "yarn build"
   },
   "repository": {
     "type": "git",
@@ -30,7 +32,7 @@
     "react-dom": "^16.10.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.4",
+    "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-decorators": "^7.6.0",
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
@@ -43,8 +45,8 @@
     "@babel/plugin-transform-spread": "^7.6.2",
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/plugin-transform-typescript": "^7.6.3",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/preset-react": "^7.6.3",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-react": "^7.8.3",
     "autoprefixer": "^9.6.5",
     "babel-loader": "^8.0.6",
     "babel-plugin-import": "^1.12.2",
@@ -70,6 +72,7 @@
     "url-loader": "^2.2.0",
     "webpack": "^4.41.1",
     "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.10.3",
     "webpack-filter-warnings-plugin": "^1.2.1"
   },
   "dependencies": {
