@@ -18,17 +18,14 @@ module.exports = {
     // quiet: true,
     hot: true
   },
+  resolve: { modules: ["node_modules"] },
   module: {
     rules: [
       {
         test: /\.less$/,
         use: [
-          {
-            loader: "style-loader"
-          },
-          {
-            loader: "css-loader"
-          },
+          { loader: "style-loader" },
+          { loader: "css-loader" },
           {
             loader: "less-loader",
             options: {
@@ -40,19 +37,12 @@ module.exports = {
         ]
       },
       {
-        test: /\.css$/,
-        use: [
-          {
-            loader: "style-loader"
-          },
-          {
-            loader: "css-loader"
-          }
-        ]
+        test: /\.css/,
+        use: [{ loader: "style-loader" }, { loader: "css-loader" }]
       },
       {
-        test: /\.js$/,
-        exclude: /(node_modules)/,
+        test: /\.js/,
+        exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {

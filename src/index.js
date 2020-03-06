@@ -12,6 +12,8 @@ export { default as Preview } from "./Preview";
 // let instanceRef = React.createRef();
 const getWidth = v => (isNaN(Number(v)) ? v : `${Number(v)}px`);
 
+
+
 function MergeableTable({ showHeader = true, data, onChange, ...rest }) {
   const {
     mouse,

@@ -16,12 +16,11 @@
     "isolatedModules": true,
     "allowUnusedLabels": true,
     "noEmit": true,
-    "baseUrl": "./components",
+    "baseUrl": "./src",
     "paths": {
       "*.ts": ["*"]
     },
     "jsx": "react"
   },
-  "include": ["components"],
-  "exclude": ["**/_*/**/*", "**/_*.*", "dist", "es", "lib"]
+  "include": ["src"]
 }
