@@ -17,6 +17,14 @@ function range2Points(range) {
   ];
 }
 
+function isRange(range) {
+  console.log("range", range);
+  const [x0, y0, x1, y1] = range;
+  // 第二坐标不为空，并且不等于第一坐标
+  // return true;
+  return x1 && y1 && (x0 !== x1 || y0 !== y1);
+}
+
 function isSamgeRange(range1, range2) {
   // const [lt0, rt0, rb0, lb0] = range1; // 区域1的4个坐标点
   // const [lt1, rt1, rb1, lb1] = range2; // 区域2的4个坐标点
@@ -35,7 +43,7 @@ function isSamgeRange(range1, range2) {
  * @param range2 区域2
  * 返回: 如果两个区域有交集 [true,newRange]，没有交集返回 [false]
  */
-function checkOverAndGetNewRange(range1, range2) {
+export function checkOverAndGetNewRange(range1, range2) {
   const [lt0, rt0, rb0] = range2Points(range1); // 区域1的4个坐标点
   const [lt1, rt1, rb1] = range2Points(range2); // 区域2的4个坐标点
 
@@ -43,7 +51,7 @@ function checkOverAndGetNewRange(range1, range2) {
   const [x2, x3] = [lt1[0], rt1[0]];
 
   // 1 1 2 6
-  console.log("xxxxxx", x0, x1, x2, x3);
+  // console.log("xxxxxx", x0, x1, x2, x3);
 
   const [y0, y1] = [rt0[1], rb0[1]];
   const [y2, y3] = [rt1[1], rb1[1]];
@@ -52,14 +60,16 @@ function checkOverAndGetNewRange(range1, range2) {
   // b.range1 在 rang2 右边，并且有交接
   // c.range1、range2 相互包含
   const xAxisHasOver =
-    (x0 <= x2 && x1 <= x3) ||
-    (x0 >= x2 && x1 >= x3) ||
+    (x1 >= x2 && x1 <= x3) ||
+    (x0 >= x2 && x0 <= x3) ||
+    // 包含在里边的情况
     (x0 <= x2 && x1 >= x3) ||
     (x0 >= x2 && x1 <= x3);
 
   const yAxisHasOver =
-    (y0 <= y2 && y1 <= y3) ||
-    (y0 >= y2 && y1 >= y3) ||
+    (y1 >= y2 && y1 <= y3) ||
+    (y0 >= y2 && y0 <= y3) ||
+    // 包含在里边的情况
     (y0 <= y2 && y1 >= y3) ||
     (y0 >= y2 && y1 <= y3);
 
@@ -81,7 +91,7 @@ function checkOverAndGetNewRange(range1, range2) {
  * @param range 选中的区域 格式:[左上坐标看，右下角坐标]
  * @param mergeds 已经合并的区域集合
  */
-function getMaxRange(range, mergeds) {
+export function getMaxRange(range, mergeds) {
   // range=[x0,y0,x2,y2]
   /* 轮询已经合并的区域集合，依次判断集合项是否与选中的区域存在交集，
   如果两个区域存在交集，取这两个区域的最大区域，删除当前集合项，一次 */
@@ -97,9 +107,9 @@ function getMaxRange(range, mergeds) {
     index++;
     const [hasOver, nextRange] = checkOverAndGetNewRange(range, current);
 
-    nextMergeds = mergeds
+    const nextMergeds = mergeds
       .slice(0, index - 1)
-      .concat(...mergeds.slice(index), [nextRange]);
+      .concat(mergeds.slice(index), [nextRange]);
 
     // console.log("nextMergeds", nextMergeds);
 
@@ -113,8 +123,6 @@ function getMaxRange(range, mergeds) {
 
     current = mergeds[index];
   }
-
-  return [range, mergeds];
+  // console.log("mergeds", mergeds);
+  return [range, isRange(range) ? [...mergeds, range] : mergeds];
 }
-const mergeds = [[2, 2, 6, 8]];
-console.log("result", getMaxRange([1, 1, 1, 2], mergeds));
