@@ -1,4 +1,4 @@
-process.env.BABEL_ENV = "production";
+process.env.BABEL_ENV = "development";
 // process.env.NODE_ENV = 'production';
 
 const fs = require("fs");
@@ -18,7 +18,10 @@ module.exports = {
     // quiet: true,
     hot: true
   },
-  resolve: { modules: ["node_modules"] },
+  resolve: {
+    modules: ["node_modules"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
+  },
   module: {
     rules: [
       {
@@ -46,9 +49,14 @@ module.exports = {
           },
           {
             test: /\.tsx?$/,
+            exclude: /node_modules/,
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-typescript"],
+              presets: [
+                "@babel/preset-env",
+                "@babel/preset-react",
+                "@babel/preset-typescript"
+              ],
               plugins: [
                 [
                   "@babel/plugin-transform-typescript",
@@ -63,7 +71,11 @@ module.exports = {
             use: {
               loader: "babel-loader",
               options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"],
+                presets: [
+                  "@babel/preset-env",
+                  "@babel/preset-react",
+                  "@babel/preset-typescript"
+                ],
                 cacheDirectory: true
               }
             }

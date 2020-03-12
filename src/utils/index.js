@@ -1,10 +1,4 @@
 
-export default function getMaxRange(cell,){
-
-
-}
-
-
 export function getSpan(input) {
   if (input === null || input === undefined || input <= 1) return 1;
 

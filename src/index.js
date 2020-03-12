@@ -1,9 +1,9 @@
 import "./style";
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import classnames from "classnames";
 
 import { Dropdown } from "antd";
-import useTable from "./hooks/useTable";
+import useTable from "./hooks/useTable1";
 import { getKey, getHeadChar, BUTTON_CODE } from "./utils";
 
 export { default as Preview } from "./Preview";
@@ -12,9 +12,13 @@ export { default as Preview } from "./Preview";
 // let instanceRef = React.createRef();
 const getWidth = v => (isNaN(Number(v)) ? v : `${Number(v)}px`);
 
-
-
-function MergeableTable({ showHeader = true, data, onChange, ...rest }) {
+function MergeableTable({
+  showHeader = true,
+  value: data,
+  onChange,
+  forwardedRef,
+  ...rest
+}) {
   const {
     mouse,
     selectedCells,
@@ -108,21 +112,20 @@ function MergeableTable({ showHeader = true, data, onChange, ...rest }) {
     </div>
   );
 }
+const Uncontrolled = ({ defaultValue, onChange, ...rest }) => {
+  const [value, setValue] = useState(defaultValue);
+  const _onChange = useCallback(
+    e => {
+      setValue(e);
+      onChange && onChange(e);
+    },
+    [onChange]
+  );
 
-export default function({ config, defaultConfig, onChange, ...rest }) {
-  if (config) {
-    return <MergeableTable {...rest} data={config} onChange={onChange} />;
-  }
+  return <MergeableTable {...rest} value={value} onChange={_onChange} />;
+};
+export default React.forwardRef(({ value, ...rest }, ref) => {
+  if (value === undefined) return <Uncontrolled {...rest} forwardedRef={ref} />;
 
-  const [_data, onValueChange] = useState(defaultConfig);
-
-  useEffect(() => {
-    onValueChange(defaultConfig);
-  }, [defaultConfig]);
-
-  const _onChange = changedValue => {
-    onValueChange(changedValue);
-    onChange && onChange(changedValue);
-  };
-  return <MergeableTable {...rest} data={_data} onChange={_onChange} />;
-}
+  return <MergeableTable {...rest} value={value} forwardedRef={ref} />;
+});

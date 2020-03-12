@@ -1,19 +1,63 @@
-type Range = [number, number, number, number];
-
 /**
- *
- * @param range 区域转坐标点
- * @returns 返回区域的四个点坐标，左上角为起始坐标，顺时针计算 [lt,rt,rb,lb]
+ * ----------------------------------→ col
+ * |
+ * |
+ * |
+ * |
+ * |
+ * |
+ * |
+ * |
+ * ↓
+ * row
  */
-export function range2Points(range: Range) {
-  const [x0, y0, x2, y2] = range;
 
-  return [
-    [x0, y0],
-    [x2, y0],
-    [x2, y2],
-    [x0, y2]
-  ];
+// row0,col0,row1,col1
+export type Range = [number, number, number, number];
+export type Cell = [number, number];
+
+// /**
+//  *
+//  * @param range 区域转坐标点
+//  * @returns 返回区域的四个点坐标，左上角为起始坐标，顺时针计算 [lt,rt,rb,lb]
+//  */
+// function range2Points(range: Range) {
+//   const [r0, c0, r1, c1] = range;
+//   // 0,0 1,1=>[0,0] [0,1] [1,1] [1,0]
+//   // console.log("range", r0, c0, r1, c1, range);
+
+//   return [
+//     [r0, c0],
+//     [r0, c1],
+//     [r1, c1],
+//     [r1, c0]
+//   ];
+// }
+
+function isRange(range: Range) {
+  // console.log("range", range);
+  const [r0, c0, r1, c1] = range;
+  // 第二坐标不为空，并且不等于第一坐标
+  // return true;
+  return r1 && c1 && (r0 !== r1 || c0 !== c1);
+}
+
+function isSamgeRange(range1: Range, range2: Range) {
+  const [r0, c0, r1, c1] = range1;
+  const [r2, c2, r3, c3] = range2;
+  return r0 === r2 && c0 === c2 && r1 === r3 && c1 === c3;
+}
+
+export function getPlaceholders(mergedRange: Range): Cell[] {
+  const [r0, c0, r1, c1] = mergedRange;
+  const cells: Cell[] = [];
+  for (let row = r0; row <= r1; row++) {
+    for (let col = c0; col <= c1; col++) {
+      if (row !== r0 || col !== c0) cells.push([row, col]);
+    }
+  }
+
+  return cells;
 }
 
 /**
@@ -22,40 +66,36 @@ export function range2Points(range: Range) {
  * @param range2 区域2
  * 返回: 如果两个区域有交集 [true,newRange]，没有交集返回 [false]
  */
-function checkOverAndGetNewRange(
+export function checkOverAndGetNewRange(
   range1: Range,
   range2: Range
 ): [boolean, Range?] {
-  const [lt0, rt0, rb0] = range2Points(range1); // 区域1的4个坐标点
-  const [lt1, rt1, rb1] = range2Points(range2); // 区域2的4个坐标点
-
-  const [x0, x1] = [lt0[0], rt0[0]];
-  const [x2, x3] = [lt1[0], rt1[0]];
-
-  const [y0, y1] = [rt0[1], rb0[0]];
-  const [y2, y3] = [rt0[0], rb1[0]];
+  const [r0, c0, r1, c1] = range1;
+  const [r2, c2, r3, c3] = range2;
 
   // a.range1 在 rang2 左边，并且有交接
   // b.range1 在 rang2 右边，并且有交接
   // c.range1、range2 相互包含
   const xAxisHasOver =
-    (x0 <= x2 && x1 <= x3) ||
-    (x0 >= x2 && x1 >= x3) ||
-    (x0 <= x2 && x1 >= x3) ||
-    (x0 >= x2 && x1 <= x3);
+    (r1 >= r2 && r1 <= r3) ||
+    (r0 >= r2 && r0 <= r3) ||
+    // 包含在里边的情况
+    (r0 <= r2 && r1 >= r3) ||
+    (r0 >= r2 && r1 <= r3);
 
   const yAxisHasOver =
-    (y0 <= y2 && y1 <= y3) ||
-    (y0 >= y2 && y1 >= y3) ||
-    (y0 <= y2 && y1 >= y3) ||
-    (y0 >= y2 && y1 <= y3);
+    (c1 >= c2 && c1 <= c3) ||
+    (c0 >= c2 && c0 <= c3) ||
+    // 包含在里边的情况
+    (c0 <= c2 && c1 >= c3) ||
+    (c0 >= c2 && c1 <= c3);
 
   // x 轴和 y 轴都有交接，证明两个区域存在交集
   if (xAxisHasOver && yAxisHasOver) {
-    const minX = Math.min(x0, x1, x2, x3);
-    const maxX = Math.max(x0, x1, x2, x3);
-    const minY = Math.min(y0, y1, y2, y3);
-    const maxY = Math.max(y0, y1, y2, y3);
+    const minX = Math.min(r0, r1, r2, r3);
+    const maxX = Math.max(r0, r1, r2, r3);
+    const minY = Math.min(c0, c1, c2, c3);
+    const maxY = Math.max(c0, c1, c2, c3);
 
     return [true, [minX, minY, maxX, maxY]];
   }
@@ -64,61 +104,43 @@ function checkOverAndGetNewRange(
 }
 
 /**
- *
+ * 判断指定选区是否跟已有的选区存在交集，并返回交集的最大选区和新的选区集合
  * @param range 选中的区域 格式:[左上坐标看，右下角坐标]
  * @param mergeds 已经合并的区域集合
  */
-export function getMaxRange(
-  range: Range,
-  mergeds: Array<Range>
-): [Range, Array<Range>] {
-  // range=[x0,y0,x2,y2]
-  /* 轮询已经合并的区域集合，依次判断集合项是否与选中的区域存在交集，
-  如果两个区域存在交集，取这两个区域的最大区域，删除当前集合项，一次 */
+export function getMaxRange(range: Range, mergeds: Range[]): [Range, Range[]] {
+  // range=[r0,c0,r1,c1]
+  /**
+   * 轮询已经合并的区域集合，依次判断集合项是否与选中的区域存在交集，
+   * 如果两个区域存在交集，取这两个区域的最大区域，并用新的区域替换 mergeds 中的旧区域
+   */
 
   let index = 0;
   let current = mergeds[index];
-  console.log("index", index, mergeds);
+
   while (current) {
     index++;
     const [hasOver, nextRange] = checkOverAndGetNewRange(range, current);
-    // 如果存在交集，更新 current 为 nextRange
+
+    // console.log("nextMergeds-0", hasOver, nextRange);
+
+    // 存在交集的情况
     if (hasOver && nextRange) {
-      const nextMergeds = [...mergeds.slice(0, index - 1)].concat(
-        ...mergeds.slice(index)
-      );
+      const nextMergeds = mergeds
+        .slice(0, index - 1)
+        .concat(mergeds.slice(index));
 
-      console.log(
-        "nextMergeds",
-        nextMergeds.concat([nextRange])
-        // mergeds.concat([nextRange])
-      );
+      // console.log("nextMergeds-1", hasOver, range, nextRange, nextMergeds);
 
-      return getMaxRange(nextRange, nextMergeds.concat([nextRange]));
+      // 两者是同一个区域，同一个区域不在轮询
+      if (isSamgeRange(range, nextRange) && nextMergeds.length === 0)
+        return [nextRange, nextMergeds];
+
+      return getMaxRange(nextRange, nextMergeds);
     }
 
     current = mergeds[index];
   }
-
-  return [range, mergeds];
+  // console.log("mergeds", mergeds);
+  return [range, isRange(range) ? [...mergeds, range] : mergeds];
 }
-
-// function a() {
-//   var list = [1, 2, 3, 4, 4, 5, 6, 67];
-
-//   let index = 0;
-//   let current = list[index];
-//   while (current) {
-//     console.log("current0", current);
-//     index++;
-//     if (current === 3) {
-//       return current;
-//     }
-//     current = list[index];
-//     console.log("current1", current);
-//   }
-//   console.log("current2", 0);
-//   return 0;
-// }
-
-// a();

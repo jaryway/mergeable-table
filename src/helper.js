@@ -50,9 +50,6 @@ export function checkOverAndGetNewRange(range1, range2) {
   const [x0, x1] = [lt0[0], rt0[0]];
   const [x2, x3] = [lt1[0], rt1[0]];
 
-  // 1 1 2 6
-  // console.log("xxxxxx", x0, x1, x2, x3);
-
   const [y0, y1] = [rt0[1], rb0[1]];
   const [y2, y3] = [rt1[1], rb1[1]];
 
@@ -87,18 +84,17 @@ export function checkOverAndGetNewRange(range1, range2) {
 }
 
 /**
- *
+ * 判断指定选区是否跟已有的选区存在交集，并返回交集的最大选区和新的选区集合
  * @param range 选中的区域 格式:[左上坐标看，右下角坐标]
  * @param mergeds 已经合并的区域集合
  */
 export function getMaxRange(range, mergeds) {
   // range=[x0,y0,x2,y2]
-  /* 轮询已经合并的区域集合，依次判断集合项是否与选中的区域存在交集，
-  如果两个区域存在交集，取这两个区域的最大区域，删除当前集合项，一次 */
+  /**
+   * 轮询已经合并的区域集合，依次判断集合项是否与选中的区域存在交集，
+   * 如果两个区域存在交集，取这两个区域的最大区域，并用新的区域替换 mergeds 中的旧区域
+  */
 
-  // let index = 0;
-  // let current = mergeds[index];
-  // console.log("index", range, mergeds);
 
   let index = 0;
   let current = mergeds[index];
@@ -115,7 +111,7 @@ export function getMaxRange(range, mergeds) {
 
     // 存在交集的情况
     if (hasOver) {
-      // 两者是同一个区域
+      // 两者是同一个区域，同一个区域不在轮询
       if (isSamgeRange(range, nextRange)) return [nextRange, nextMergeds];
 
       return getMaxRange(nextRange, nextMergeds);
