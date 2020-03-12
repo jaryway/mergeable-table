@@ -59,16 +59,15 @@ function MergeableTable({
   ]);
 
   const getOverlay = useCallback(() => {
-    // console.log("getOverlay", selection);
     if (!selection.length) return <div />;
 
-    const [x, y] = selection;
-    const cell = data.elements.find(m => m.row === x && m.col === y) || {};
+    const [[row, col]] = selectedCells;
+    const cell = data.elements.find(m => m.row === row && m.col === col) || {};
     const { rowSpan, colSpan } = cell;
-
+    // console.log("getOverlay", selectedCells);
     // 是否选中了多个单元格，选中了多个单元格后拆分单元格不能使用
-    const canMergeCell = selection.length > 1;
-    const canSplitCell = selection.length === 1 && rowSpan + colSpan > 3;
+    const canMergeCell = selectedCells.length > 1;
+    const canSplitCell = selectedCells.length === 1 && rowSpan + colSpan > 2;
 
     // console.log('getOverlay', canSplit, cell, selection);
 
@@ -100,11 +99,6 @@ function MergeableTable({
 
   var rows = Array.apply(null, { length: data.rows }).map((_, i) => i);
   var cols = Array.apply(null, { length: data.cols }).map((_, i) => i);
-
-  // var rowsCols = rows.reduce(
-  //   (prev, r) => [...prev, ...cols.map(c => [r, c])],
-  //   []
-  // );
 
   return (
     <div
