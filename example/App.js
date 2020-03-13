@@ -9,7 +9,7 @@ function App() {
       <MergeableTable
         className="fregata-control"
         style={{ maxHeight: "100vh" }}
-        defaultValue={{ elements: [], cols: 30, rows: 60 }}
+        defaultValue={{ elements: [], cols: 30, rows: 30 }}
         showHeader={true}
       />
     </div>
