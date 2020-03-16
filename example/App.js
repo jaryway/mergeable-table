@@ -1,7 +1,7 @@
 import React from "react";
 
-import MergeableTable from "../src/index1";
-import "antd/dist/antd.css";
+import MergeableTable from "../src/index";
+// import "antd/dist/antd.css";
 
 function App() {
   return (

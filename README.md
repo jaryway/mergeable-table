@@ -13,3 +13,6 @@ a mergeable table
 `npm version [<newversion> | major | minor | patch`
 
 2、Run npm publish.
+
+
+yarn add --peer @types/react @types/react-dom antd react react-dom

@@ -11,10 +11,18 @@
  * ↓
  * row
  */
+import { Cell, Range } from "./index.d";
 
-// row0,col0,row1,col1
-export type Range = [number, number, number, number];
-export type Cell = [number, number];
+const letters = "ABCDEFGHIJKLMNOPQRSTYVWXYZ".split("");
+export function getHeadChar(index: number): string {
+  // 28 => AC
+  const times = Math.floor(index / letters.length);
+  const res = letters[index % letters.length];
+
+  if (times > 0) return getHeadChar(times - 1) + res;
+
+  return res;
+}
 
 // /**
 //  *
@@ -39,17 +47,17 @@ export function isInRange(cell: Cell, range: Range) {
   if (!cell || !cell.length) return false;
 
   const [row, col] = cell || [];
-  const [r0, c0, r1, c1] = range || []
+  const [r0, c0, r1, c1] = range || [];
   return row >= r0 && row <= r1 && col >= c0 && col <= c1;
 }
 
-function isRange(range: Range) {
-  // console.log("range", range);
-  const [r0, c0, r1, c1] = range;
-  // 第二坐标不为空，并且不等于第一坐标
-  // return true;
-  return r1 && c1 && (r0 !== r1 || c0 !== c1);
-}
+// function isRange(range: Range) {
+//   // console.log("range", range);
+//   const [r0, c0, r1, c1] = range;
+//   // 第二坐标不为空，并且不等于第一坐标
+//   // return true;
+//   return r1 && c1 && (r0 !== r1 || c0 !== c1);
+// }
 
 function isSamgeRange(range1: Range, range2: Range) {
   const [r0, c0, r1, c1] = range1;

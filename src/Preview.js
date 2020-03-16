@@ -1,7 +1,7 @@
 import "./style";
 import React from "react";
 import classnames from "classnames";
-import { getKey, getHeadChar } from "./utils";
+import { getHeadChar } from "./helper";
 
 const getWidth = v => (isNaN(Number(v)) ? v : `${Number(v)}px`);
 
@@ -40,7 +40,7 @@ function MergeableTable({ showHeader = true, data, ...rest }) {
                     <td
                       style={{ ...colStyle }}
                       data-id={cell.id}
-                      key={key}
+                      key={`${cell.row}_${cell.col}`}
                       // className={classnames({ selected })}
                       {...{ rowSpan, colSpan }}
                     >

@@ -1,17 +1,23 @@
 import React, { useState, useCallback, useMemo } from "react";
 import classnames from "classnames";
-import { Dropdown, Menu } from "antd";
+// import { Dropdown, Menu } from "antd";
+import Dropdown from "rc-dropdown";
+import Menu, { MenuItem, Divider } from "rc-menu";
 import useTable from "./hooks/useTable";
-import { getKey, getHeadChar, BUTTON_CODE } from "./utils";
-import { isInRange } from "./helper";
+// import { getKey, getHeadChar, BUTTON_CODE } from "./utils";
+// import { isInRange } from "./helper";
+import { getHeadChar } from "./helper";
+import { BUTTON_CODE, MergeableTableProps, Element } from "./index.d";
+
+import "rc-dropdown/assets/index.css";
 
 import "./style";
 
 export { default as Preview } from "./Preview";
-
+// console.log("xxxxxxxx", Dropdown, Menu);
 // const noop = () => {};
 // let instanceRef = React.createRef();
-const getWidth = v => (isNaN(Number(v)) ? v : `${Number(v)}px`);
+const getWidth = (v: number) => (isNaN(Number(v)) ? v : `${Number(v)}px`);
 
 function MergeableTable({
   showHeader = true,
@@ -19,12 +25,14 @@ function MergeableTable({
   onChange,
   forwardedRef,
   ...rest
-}) {
+}: MergeableTableProps) {
+  if (!data) return null;
+
   const {
     mouse,
-    selection,
-    range: selectedRange,
-    // selectedCells,
+    // selection,
+    // range: selectedRange,
+    selectedCells,
     placeholders,
     onCellMouseLeftDown,
     onCellMouseOver,
@@ -39,7 +47,7 @@ function MergeableTable({
     // getOverlay
   } = useTable(data, onChange);
 
-  const actions = useMemo(() => {
+  const actions: any = useMemo(() => {
     // console.log('range', range);
     return {
       merge: onMergeCell,
@@ -60,20 +68,21 @@ function MergeableTable({
     onClean
   ]);
 
-  const getOverlay = useCallback(() => {
-    if (!selection.length) return <div />;
+  const memorizedOverlay = useMemo(() => {
+    if (!selectedCells.length) return <div />;
+    if (!data) return;
 
-    const [row, col, row1, col1] = selectedRange;
-    const cell = data.elements.find(m => m.row === row && m.col === col) || {};
-    const { rowSpan = 1, colSpan = 1 } = cell;
+    const [[row, col, rowSpan = 1, colSpan = 1]] = selectedCells;
+
+    const cell =
+      data.elements.find((m: any) => m.row === row && m.col === col) || {};
+    // const { rowSpan = 1, colSpan = 1 } = cell;
+    // console.log("memorizedOverlay",selectedCells, colSpan, rowSpan);
     const hasSpan = rowSpan + colSpan > 2;
-    // console.log("getOverlay", selectedCells);
-    // 是否选中了多个单元格，选中了多个单元格后拆分单元格不能使用
-    const canMergeCell = (row !== row1 || col !== col1) && !hasSpan;
-    const canSplitCell =
-      row + rowSpan - 1 === row1 && col + colSpan - 1 === col1 && hasSpan;
 
-    // console.log("getOverlay", row, col, row1, col1, canSplitCell);
+    // 是否选中了多个单元格，选中了多个单元格后拆分单元格不能使用
+    const canMergeCell = selectedCells.length > 1;
+    const canSplitCell = selectedCells.length === 1 && hasSpan;
 
     return (
       <Menu
@@ -83,28 +92,32 @@ function MergeableTable({
           actions[key](cell);
         }}
       >
-        <Menu.Item key="merge" disabled={!canMergeCell}>
+        <MenuItem key="merge" disabled={!canMergeCell}>
           合并单元格
-        </Menu.Item>
-        <Menu.Item key="split" disabled={!canSplitCell}>
+        </MenuItem>
+        <MenuItem key="split" disabled={!canSplitCell}>
           拆分单元格
-        </Menu.Item>
-        <Menu.Divider key="d1" />
-        <Menu.Item key="addrow">添加行</Menu.Item>
-        <Menu.Item key="delrow">删除行</Menu.Item>
-        <Menu.Divider key="d2" />
-        <Menu.Item key="addcol">添加列</Menu.Item>
-        <Menu.Item key="delcol">删除列</Menu.Item>
-        <Menu.Divider key="d3" />
-        <Menu.Item key="clean">清空选择</Menu.Item>
+        </MenuItem>
+        <Divider key="d1" />
+        <MenuItem key="addrow">添加行</MenuItem>
+        <MenuItem key="delrow">删除行</MenuItem>
+        <Divider key="d2" />
+        <MenuItem key="addcol">添加列</MenuItem>
+        <MenuItem key="delcol">删除列</MenuItem>
+        <Divider key="d3" />
+        <MenuItem key="clean">清空选择</MenuItem>
       </Menu>
     );
-  }, [actions, selection, selectedRange, data]);
+  }, [actions, selectedCells, data]);
 
-  console.log("selectedRange", selection, selectedRange);
+  // console.log("selectedRange", selection, selectedCells);
 
-  var rows = Array.apply(null, { length: data.rows }).map((_, i) => i);
-  var cols = Array.apply(null, { length: data.cols }).map((_, i) => i);
+  var rows = Array.apply<any, any, any>(null, { length: data.rows }).map(
+    (_: any, i: number) => i
+  );
+  var cols = Array.apply<any, any, any>(null, { length: data.cols }).map(
+    (_: any, i: number) => i
+  );
 
   return (
     <div
@@ -115,27 +128,31 @@ function MergeableTable({
         {showHeader && (
           <thead>
             <tr>
-              {cols.map(col => (
+              {cols.map((col: number) => (
                 <th key={col}>{getHeadChar(col)}</th>
               ))}
             </tr>
           </thead>
         )}
         <Dropdown
-          disabled={!selection.length}
-          overlay={getOverlay()}
+          // disabled={!selectedCells.length}
+          overlay={memorizedOverlay}
           trigger={["contextMenu"]}
+          animation="slide-up"
+          alignPoint
         >
           <tbody>
-            {rows.map(i => {
+            {rows.map((i: number) => {
               return (
                 <tr key={i}>
-                  {cols.map(j => {
+                  {cols.map((j: number) => {
                     // const key = getKey(i, j);
-                    const cell =
-                      data.elements.find(m => m.row === i && m.col === j) || {};
+                    const cell: Element | any =
+                      data.elements.find(
+                        (m: any) => m.row === i && m.col === j
+                      ) || {};
                     const isPlaceholder = placeholders.some(
-                      m => m[0] === i && m[1] === j
+                      (m: any) => m[0] === i && m[1] === j
                     );
 
                     // 占位单元格不渲染
@@ -143,7 +160,9 @@ function MergeableTable({
 
                     const { colSpan = 1, rowSpan = 1 } = cell;
 
-                    const selected = isInRange([i, j], selectedRange);
+                    const selected = selectedCells.some(
+                      m => m[0] === i && m[1] === j
+                    );
                     const _onCellMouseLeftDown = onCellMouseLeftDown(i, j);
                     // console.log("children: cell.children,", colSpan, rowSpan);
                     // 占位单元格不渲染
@@ -196,8 +215,12 @@ function MergeableTable({
   );
 }
 
-const Uncontrolled = ({ defaultValue, onChange, ...rest }) => {
-  const [value, setValue] = useState(defaultValue);
+const Uncontrolled = ({
+  defaultValue,
+  onChange,
+  ...rest
+}: MergeableTableProps) => {
+  const [value, setValue] = useState<any>(defaultValue);
   const _onChange = useCallback(
     e => {
       setValue(e);
@@ -208,8 +231,14 @@ const Uncontrolled = ({ defaultValue, onChange, ...rest }) => {
 
   return <MergeableTable {...rest} value={value} onChange={_onChange} />;
 };
-export default React.forwardRef(({ value, ...rest }, ref) => {
-  if (value === undefined) return <Uncontrolled {...rest} forwardedRef={ref} />;
 
-  return <MergeableTable {...rest} value={value} forwardedRef={ref} />;
-});
+export default React.forwardRef<any, MergeableTableProps>(
+  ({ value, ...rest }: MergeableTableProps, ref: any) => {
+    if (value === undefined)
+      return <Uncontrolled {...rest} forwardedRef={ref} />;
+
+    return (
+      <MergeableTable showHeader={false} value={value} forwardedRef={ref} />
+    );
+  }
+);
