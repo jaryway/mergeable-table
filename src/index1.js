@@ -3,6 +3,7 @@ import classnames from "classnames";
 import { Dropdown, Menu } from "antd";
 import useTable from "./hooks/useTable";
 import { getKey, getHeadChar, BUTTON_CODE } from "./utils";
+import { isInRange } from "./helper";
 
 import "./style";
 
@@ -22,7 +23,8 @@ function MergeableTable({
   const {
     mouse,
     selection,
-    selectedCells,
+    range: selectedRange,
+    // selectedCells,
     placeholders,
     onCellMouseLeftDown,
     onCellMouseOver,
@@ -61,15 +63,17 @@ function MergeableTable({
   const getOverlay = useCallback(() => {
     if (!selection.length) return <div />;
 
-    const [[row, col]] = selectedCells;
+    const [row, col, row1, col1] = selectedRange;
     const cell = data.elements.find(m => m.row === row && m.col === col) || {};
-    const { rowSpan, colSpan } = cell;
+    const { rowSpan = 1, colSpan = 1 } = cell;
+    const hasSpan = rowSpan + colSpan > 2;
     // console.log("getOverlay", selectedCells);
     // 是否选中了多个单元格，选中了多个单元格后拆分单元格不能使用
-    const canMergeCell = selectedCells.length > 1;
-    const canSplitCell = selectedCells.length === 1 && rowSpan + colSpan > 2;
+    const canMergeCell = (row !== row1 || col !== col1) && !hasSpan;
+    const canSplitCell =
+      row + rowSpan - 1 === row1 && col + colSpan - 1 === col1 && hasSpan;
 
-    // console.log('getOverlay', canSplit, cell, selection);
+    // console.log("getOverlay", row, col, row1, col1, canSplitCell);
 
     return (
       <Menu
@@ -95,7 +99,9 @@ function MergeableTable({
         <Menu.Item key="clean">清空选择</Menu.Item>
       </Menu>
     );
-  }, [actions, selection, data]);
+  }, [actions, selection, selectedRange, data]);
+
+  console.log("selectedRange", selection, selectedRange);
 
   var rows = Array.apply(null, { length: data.rows }).map((_, i) => i);
   var cols = Array.apply(null, { length: data.cols }).map((_, i) => i);
@@ -125,7 +131,7 @@ function MergeableTable({
               return (
                 <tr key={i}>
                   {cols.map(j => {
-                    const key = getKey(i, j);
+                    // const key = getKey(i, j);
                     const cell =
                       data.elements.find(m => m.row === i && m.col === j) || {};
                     const isPlaceholder = placeholders.some(
@@ -136,9 +142,8 @@ function MergeableTable({
                     if (isPlaceholder) return null;
 
                     const { colSpan = 1, rowSpan = 1 } = cell;
-                    const selected = selectedCells.some(
-                      ([r, c]) => r === i && c === j
-                    );
+
+                    const selected = isInRange([i, j], selectedRange);
                     const _onCellMouseLeftDown = onCellMouseLeftDown(i, j);
                     // console.log("children: cell.children,", colSpan, rowSpan);
                     // 占位单元格不渲染
@@ -149,7 +154,7 @@ function MergeableTable({
                     return (
                       <td
                         style={{ ...colStyle }}
-                        data-id={cell.id}
+                        data-id={(cell || {}).id}
                         key={`${i}-${j}`}
                         className={classnames({ selected })}
                         {...{ rowSpan, colSpan }}
@@ -177,7 +182,7 @@ function MergeableTable({
                         }}
                       >
                         {i}-{j}
-                        {cell.render && cell.render(cell)}
+                        {cell && cell.render && cell.render(cell)}
                       </td>
                     );
                   })}

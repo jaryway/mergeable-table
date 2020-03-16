@@ -1,14 +1,7 @@
 // /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import update from "immutability-helper";
-import { Menu } from "antd";
-import {
-  // range2Cells,
-  getRange,
-  getMergedPlace
-  // getCellRange
-  // MOUSE
-} from "../utils";
+// import { Menu } from "antd";
 import { Range, Cell, getMaxRange, getPlaceholders } from "../helper";
 
 interface Element {
@@ -18,7 +11,8 @@ interface Element {
   colSpan: number;
 }
 
-type StartEndCell = [] | [number, number] | [number, number, number, number];
+// [row,col,rowSpan,colSpan]
+type SelectedCell = [number, number, number?, number?];
 
 enum MOUSE {
   UP,
@@ -58,13 +52,19 @@ function getCellRange(cell: Cell, mergeds: Range[]): Range {
   return range ? range : [row, col, row, col];
 }
 
-function range2Cells(range: Range): Cell[] {
+function range2Cells(range: Range): SelectedCell[] {
+  if (!range || !range.length) return [];
+
+  // console.log("range2Cells", range);
+
   const [r0, c0, r1, c1] = range;
-  const minRow = Math.min(r0, r1);
-  const maxRow = Math.max(r0, r1);
-  const minCol = Math.min(c0, c1);
-  const maxCol = Math.max(c0, c1);
-  const res: Cell[] = [];
+  const [minRow, maxRow] = r0 < r1 ? [r0, r1] : [r1, r0];
+  const [minCol, maxCol] = c0 < c1 ? [c0, c1] : [c1, c0];
+
+  // console.log("range2Cells", minRow, maxRow);
+
+  const res: SelectedCell[] = [];
+
   for (let row = minRow; row <= maxRow; row++) {
     for (let col = minCol; col <= maxCol; col++) {
       res.push([row, col]);
@@ -77,24 +77,17 @@ function range2Cells(range: Range): Cell[] {
 const useTable = (data: any, onChange: any) => {
   const [mouse, setMouse] = useState(MOUSE.UP); // 鼠标单击状态
   const [state, setState] = useState<any>({ mergeds: [], placeholders: [] });
-  const [selection, setSelection] = useState<StartEndCell>([]); // 选中的开始单元格和结束单元格
-  const [selectedCells, setSelectedCells] = useState<Cell[]>([]); // 选中的要高亮的单元格
+  const [selection, setSelection] = useState<number[]>([]); // 选中的开始单元格和结束单元格
+  const [selectedCells, setSelectedCells] = useState<SelectedCell[]>([]); // 选中的要高亮的单元格
   const [selectedRange, setSelectedRange] = useState<any>([]); // 选中的最大区域
 
   const { mergeds, placeholders } = state;
 
-  // const {
-  //   place: memoizedPlaceCells,
-  //   merged: memoizedMergedCells
-  // } = useMemo(() => {
-  //   // 获取合并单元格和占位单元格
-  //   return getMergedPlace(data.elements);
-  // }, [data]);
-
+  // elements 发生变化，重新生成 mergeds、placeholders
   useEffect(() => {
     const _mergeds = getMergeds(data.elements);
     const _placeholders = mergeds2Placeholders(_mergeds);
-    console.log("reset-getMergeds");
+    // console.log("reset-getMergeds");
     setState((prev: any) => ({
       ...prev,
       mergeds: _mergeds,
@@ -102,50 +95,55 @@ const useTable = (data: any, onChange: any) => {
     }));
   }, [data.elements]);
 
+  // 选区发生变化=> 改变选中的单元格
+  useEffect(() => {
+    // console.log("useEffect-----", selectedRange);
+    // setSelectedCells(range2Cells(selectedRange));
+  }, [selectedRange]);
+
   const onCellMouseLeftDown = useCallback(
     (i, j) => {
       return () => {
         // 鼠标点击后，确定开始坐标
-        console.log("onCellMouseLeftDown", i, j);
+        // console.log("onCellMouseLeftDown", i, j);
         const startRange = getCellRange([i, j], mergeds);
-        const selectedCell: Cell = [i, j];
 
         setSelection(() => [i, j]);
-        setSelectedCells([selectedCell]);
         setSelectedRange(startRange);
+        // setSelectedCells(range2Cells(startRange));
         setMouse(MOUSE.DOWN);
       };
     },
     [mergeds]
   );
 
-  console.log("placeholders", selection);
+  console.log("selectedRange", selectedRange, selectedCells);
 
   const onCellMouseOver = useCallback(
-    (i, j) => {
-      return (_e: any) => {
+    (r1, c1) => {
+      return () => {
         //
         if (mouse !== MOUSE.DOWN) return false;
         if (!selection.length) return false;
-        const [m, n] = selection;
+        const [r0, c0] = selection;
+        // 比较大小，避免从右到左选择合并不对的情况
+        const [row0, row1] = r0 < r1 ? [r0, r1] : [r1, r0];
+        const [col0, col1] = c0 < c1 ? [c0, c1] : [c1, c0];
 
-        // 已经选中了，跳过
-        if (m === i && n === j) return false;
+        // 同一个选中的局域返回
+        if (r0 === r1 && c0 === c1) return;
 
-        console.log("onCellMouseOver1", selection);
-        // 注意：单元有可能已经合并过
+        const [nextRange] = getMaxRange([row0, col0, row1, col1], mergeds);
 
-        const [nextRange] = getMaxRange([m, n, i, j], mergeds);
-        setSelection(nextRange);
         setSelectedRange(nextRange);
-        setSelectedCells(range2Cells(nextRange));
-        // console.log("onCellMouseOver", nextRange, range2Cells(nextRange));
+        setSelection([r0, c0, row1, col1]);
+        // setSelectedCells(range2Cells(nextRange));
       };
     },
     [placeholders, mergeds, mouse, selection]
   );
 
-  const onCellMouseUp = () => setMouse(0);
+  const onCellMouseUp = () => setMouse(MOUSE.UP);
 
   // 合并单元格
   const onMergeCell = useCallback(() => {
@@ -193,17 +191,14 @@ const useTable = (data: any, onChange: any) => {
           };
     const changedValue = { ...data, elements: update(nextData, command) };
     onChange && onChange(changedValue);
-    // setState(prev => ({ ...prev, elements: update(nextData, command) }));
-    setSelection([]);
-    setSelectedCells([]);
-    setSelectedRange([]);
-    // console.log("onMergeCell-changedValue", data, changedValue);
-  }, [data, selectedRange]);
 
+    setSelection([]);
+    setSelectedRange([]);
+  }, [data, selectedRange]);
+  // console.log("onSplitCell", data.elements);
   // 拆分单元格
   const onSplitCell = useCallback(() => {
-    const [row, col] = selection;
-    console.log("onSplitCell", selection);
+    const [row, col] = selectedRange;
     const index = data.elements.findIndex(
       (m: Element) => m.row === row && m.col === col
     );
@@ -224,9 +219,9 @@ const useTable = (data: any, onChange: any) => {
     onChange && onChange(changedValue);
     setSelection([]);
     setSelectedRange([]);
-  }, [data, selection]);
+  }, [data, selectedRange]);
 
-  // console.log("startCell", data.elements);
+  // console.log("selection", data.elements);
 
   // 添加行，从选区最小的行上方添加一行
   const onAddRow = useCallback(() => {
@@ -302,7 +297,6 @@ const useTable = (data: any, onChange: any) => {
 
     onChange && onChange(changedValue);
     setSelection([]);
-
     setSelectedRange([]);
   }, [data, selectedRange]);
 
@@ -345,19 +339,19 @@ const useTable = (data: any, onChange: any) => {
     selection,
     selectedCells,
     range: selectedRange,
-    // getOverlay,
     mergeds,
     placeholders,
 
     onCellMouseLeftDown,
     onCellMouseOver,
     onCellMouseUp,
+
     onMergeCell,
     onSplitCell,
     onAddRow,
+    onAddCol,
     onDelRow,
     onDelCol,
-    onAddCol,
     onClean
   };
 };

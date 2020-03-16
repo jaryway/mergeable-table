@@ -34,6 +34,15 @@ export type Cell = [number, number];
 //   ];
 // }
 
+export function isInRange(cell: Cell, range: Range) {
+  if (!range || !range.length) return false;
+  if (!cell || !cell.length) return false;
+
+  const [row, col] = cell || [];
+  const [r0, c0, r1, c1] = range || []
+  return row >= r0 && row <= r1 && col >= c0 && col <= c1;
+}
+
 function isRange(range: Range) {
   // console.log("range", range);
   const [r0, c0, r1, c1] = range;
