@@ -207,7 +207,7 @@ function MergeableTable({
                           _onCellMouseLeftDown(e);
                         }}
                       >
-                        {i}-{j}
+                        {/* {i}-{j} */}
                         {cell && cell.render && cell.render(cell)}
                       </td>
                     );
