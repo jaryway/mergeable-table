@@ -65,17 +65,17 @@ function isSamgeRange(range1: Range, range2: Range) {
   return r0 === r2 && c0 === c2 && r1 === r3 && c1 === c3;
 }
 
-export function getPlaceholders(mergedRange: Range): Cell[] {
-  const [r0, c0, r1, c1] = mergedRange;
-  const cells: Cell[] = [];
-  for (let row = r0; row <= r1; row++) {
-    for (let col = c0; col <= c1; col++) {
-      if (row !== r0 || col !== c0) cells.push([row, col]);
-    }
-  }
+// export function getPlaceholders(mergedRange: Range): Cell[] {
+//   const [r0, c0, r1, c1] = mergedRange;
+//   const cells: Cell[] = [];
+//   for (let row = r0; row <= r1; row++) {
+//     for (let col = c0; col <= c1; col++) {
+//       if (row !== r0 || col !== c0) cells.push([row, col]);
+//     }
+//   }
 
-  return cells;
-}
+//   return cells;
+// }
 
 /**
  * 判断两个区域是否有交集，并返回新区域
@@ -158,6 +158,6 @@ export function getMaxRange(range: Range, mergeds: Range[]): [Range] {
 
     current = mergeds[index];
   }
-  console.log("mergeds", mergeds);
+  // console.log("mergeds", mergeds);
   return [range];
 }

@@ -1,8 +1,6 @@
-// /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useState, useEffect } from "react";
 import update from "immutability-helper";
-// import { Menu } from "antd";
-import { getMaxRange, getPlaceholders } from "../helper";
+import { getMaxRange } from "../helper";
 
 import { Cell, Range, SelectedCell, MOUSE, Element } from "../index.d";
 
@@ -19,12 +17,6 @@ function getMergeds(elements: Element[]): Range[] {
       row + rowSpan - 1,
       col + colSpan - 1
     ]);
-}
-
-function mergeds2Placeholders(mergeds: Range[]): Cell[] {
-  return mergeds.reduce((prev: Cell[], current: Range) => {
-    return [...prev, ...getPlaceholders(current)];
-  }, []);
 }
 
 function getCellRange(cell: Cell, mergeds: Range[]): Range {
@@ -49,9 +41,9 @@ function range2Cells(range: Range, mergeds: any): SelectedCell[] {
         ([row0, col0, row1, col1]: number[]) =>
           row >= row0 && row <= row1 && col >= col0 && col <= col1
       );
-
+      // 如果单元格在合并的区域内，只 push 第一个单元格
       if (match) {
-        console.log("selectedCells-match", row, col);
+        // console.log("selectedCells-match", row, col);
         const [row0, col0, r, c]: number[] = match;
         if (row0 === row && col0 === col)
           res.push([row, col, r - row + 1, c - col + 1]);
@@ -68,28 +60,24 @@ function range2Cells(range: Range, mergeds: any): SelectedCell[] {
 
 const useTable = (data: any, onChange: any) => {
   const [mouse, setMouse] = useState(MOUSE.UP); // 鼠标单击状态
-  const [state, setState] = useState<any>({ mergeds: [], placeholders: [] });
+  const [state, setState] = useState<any>({ mergeds: [] });
   const [selection, setSelection] = useState<number[]>([]); // 选中的开始单元格和结束单元格
   const [selectedCells, setSelectedCells] = useState<SelectedCell[]>([]); // 选中的要高亮的单元格
   const [selectedRange, setSelectedRange] = useState<Range | []>([]); // 当前选中的区域
 
-  const { mergeds, placeholders } = state;
+  const { mergeds } = state;
 
   // elements 发生变化，重新生成 mergeds、placeholders
   useEffect(() => {
     const _mergeds = getMergeds(data.elements);
-    const _placeholders = mergeds2Placeholders(_mergeds);
+    // const _placeholders = mergeds2Placeholders(_mergeds);
     // console.log("reset-getMergeds");
-    setState((prev: any) => ({
-      ...prev,
-      mergeds: _mergeds,
-      placeholders: _placeholders
-    }));
+    setState((prev: any) => ({ ...prev, mergeds: _mergeds }));
   }, [data.elements]);
 
   // 选区发生变化=> 改变选中的单元格
   useEffect(() => {
-    console.log("selectedCells", { selectedRange, selectedCells });
+    // console.log("selectedCells", { selectedRange, selectedCells });
     // if (!selectedRange.length) return;
     setSelectedCells(
       selectedRange.length ? range2Cells(selectedRange, mergeds) : []
@@ -111,7 +99,7 @@ const useTable = (data: any, onChange: any) => {
     [mergeds]
   );
 
-  console.log("selectedCells", { selectedRange, selectedCells });
+  // console.log("selectedCells", { selectedRange, selectedCells });
 
   const onCellMouseOver = useCallback(
     (r1: number, c1: number) => {
@@ -242,11 +230,6 @@ const useTable = (data: any, onChange: any) => {
       })
     };
 
-    // setSelectedRange((prev: Range | []) => {
-    //   if (!prev.length) return [];
-    //   const [r0, c0, r1, c1] = prev;
-    //   return [r0 + 1, c0, r1 + 1, c1];
-    // });
     setSelectedRange([]);
     onChange && onChange(changedValue);
   }, [data, selectedRange]);
@@ -273,13 +256,7 @@ const useTable = (data: any, onChange: any) => {
       })
     };
 
-    // setSelectedRange((prev: Range | []) => {
-    //   if (!prev.length) return [];
-    //   const [r0, c0, r1, c1] = prev;
-    //   return [r0, c0 + 1, r1, c1 + 1];
-    // });
     setSelectedRange([]);
-
     onChange && onChange(changedValue);
   }, [data, selectedRange]);
 
@@ -346,11 +323,10 @@ const useTable = (data: any, onChange: any) => {
 
   return {
     mouse,
+    mergeds,
     selection,
     selectedCells,
-    range: selectedRange,
-    mergeds,
-    placeholders,
+    selectedRange,
 
     onCellMouseLeftDown,
     onCellMouseOver,

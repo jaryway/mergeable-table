@@ -1,6 +1,6 @@
 import React from "react";
 
-import MergeableTable from "../src/index";
+import MergeableTable, { Preview as MergeableTablePreview } from "../src/index";
 // import "antd/dist/antd.css";
 
 function App() {
@@ -12,6 +12,12 @@ function App() {
         defaultValue={{ elements: [], cols: 30, rows: 30 }}
         showHeader={true}
       />
+      {/* <MergeableTablePreview
+        className="fregata-control"
+        style={{ maxHeight: "100vh" }}
+        defaultValue={{ elements: [], cols: 30, rows: 30 }}
+        showHeader={false}
+      /> */}
     </div>
   );
 }
