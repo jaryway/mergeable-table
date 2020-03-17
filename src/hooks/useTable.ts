@@ -115,7 +115,7 @@ const useTable = (data: any, onChange: any) => {
         // 同一个选中的局域返回
         if (r0 === r1 && c0 === c1) return;
 
-        const [nextRange] = getMaxRange([row0, col0, row1, col1], mergeds);
+        const nextRange = getMaxRange([row0, col0, row1, col1], mergeds);
 
         setSelectedRange(nextRange);
         setSelection([r0, c0, row1, col1]);

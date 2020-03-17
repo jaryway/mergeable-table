@@ -125,7 +125,7 @@ export function checkOverAndGetNewRange(
  * @param range 选中的区域 格式:[左上坐标看，右下角坐标]
  * @param mergeds 已经合并的区域集合
  */
-export function getMaxRange(range: Range, mergeds: Range[]): [Range] {
+export function getMaxRange(range: Range, mergeds: Range[]): Range {
   // range=[r0,c0,r1,c1]
   /**
    * 轮询已经合并的区域集合，依次判断集合项是否与选中的区域存在交集，
@@ -149,9 +149,9 @@ export function getMaxRange(range: Range, mergeds: Range[]): [Range] {
 
       // console.log("nextMergeds-1", hasOver, range, nextRange, nextMergeds);
 
-      // 两者是同一个区域，同一个区域不在轮询
+      // 两者是同一个区域，并且是最后一个
       if (isSamgeRange(range, nextRange) && nextMergeds.length === 0)
-        return [nextRange];
+        return nextRange;
 
       return getMaxRange(nextRange, nextMergeds);
     }
@@ -159,5 +159,5 @@ export function getMaxRange(range: Range, mergeds: Range[]): [Range] {
     current = mergeds[index];
   }
   // console.log("mergeds", mergeds);
-  return [range];
+  return range;
 }
