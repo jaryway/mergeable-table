@@ -1,23 +1,30 @@
-const rimraf = require('rimraf');
-const gulp = require('gulp');
-const babel = require('gulp-babel');
-const ts = require('gulp-typescript');
-const merge2 = require('merge2');
-const through2 = require('through2');
-const { cssInjection } = require('./config/styleUtil');
-const transformLess = require('./config/transformLess');
-const getBabelCommonConfig = require('./config/getBabelCommonConfig');
-const tsConfig = require('./config/getTSCommonConfig')();
-const tsDefaultReporter = ts.reporter.defaultReporter();
+/* eslint-disable func-names */
+/* eslint-disable no-param-reassign */
+const rimraf = require("rimraf");
+const gulp = require("gulp");
+const babel = require("gulp-babel");
+const ts = require("gulp-typescript");
+const merge2 = require("merge2");
+const through2 = require("through2");
+const minimist = require("minimist");
+const { cssInjection } = require("./config/styleUtil");
+const transformLess = require("./config/transformLess");
+const getBabelCommonConfig = require("./config/getBabelCommonConfig");
 
-const libDir = 'lib';
-const esDir = 'es';
+const getTSCommonConfig = require("./config/getTSCommonConfig");
+
+const tsConfig = getTSCommonConfig();
+const tsDefaultReporter = ts.reporter.defaultReporter();
+const argv = minimist(process.argv.slice(2));
+
+const libDir = "lib";
+const esDir = "es";
 
 const compile = modules => {
   rimraf.sync(modules !== false ? libDir : esDir);
 
   const less = gulp
-    .src(['src/**/*.less'])
+    .src(["src/**/*.less"])
     .pipe(
       through2.obj(function(file, encoding, next) {
         // 将 less 文件转成 css 文件
@@ -26,7 +33,7 @@ const compile = modules => {
           transformLess(file.path)
             .then(css => {
               file.contents = Buffer.from(css);
-              file.path = file.path.replace(/\.less$/, '.css');
+              file.path = file.path.replace(/\.less$/, ".css");
               this.push(file);
               next();
             })
@@ -39,14 +46,20 @@ const compile = modules => {
       })
     )
     .pipe(gulp.dest(modules === false ? esDir : libDir));
-
-  const source = ['src/**/*.tsx', 'src/**/*.ts', 'src/**/*.d.ts'];
+  //
+  const source = [
+    "src/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "!src/**/*.test.js",
+    "!**/__test__/**"
+  ];
   if (tsConfig.allowJs) {
-    source.unshift('src/**/*.jsx', 'src/**/*.js','!src/**/*.test.js');
+    source.unshift("src/**/*.jsx", "src/**/*.js");
   }
   let error = 0;
   function check() {
-    if (error && !argv['ignore-error']) {
+    if (error && !argv["ignore-error"]) {
       process.exit(1);
     }
   }
@@ -57,11 +70,11 @@ const compile = modules => {
         tsDefaultReporter.error(e);
         error = 1;
       },
-      finish: tsDefaultReporter.finish,
+      finish: tsDefaultReporter.finish
     })
   );
-  tsResult.on('finish', check);
-  tsResult.on('end', check);
+  tsResult.on("finish", check);
+  tsResult.on("end", check);
 
   const js = tsResult.js
     .pipe(babel({ babelrc: false, ...getBabelCommonConfig(modules) }))
@@ -81,7 +94,7 @@ const compile = modules => {
           }
 
           file.contents = Buffer.from(cssInjection(content));
-          file.path = file.path.replace(/index\.js/, 'css.js');
+          file.path = file.path.replace(/index\.js/, "css.js");
           this.push(file);
           next();
         } else {
@@ -91,22 +104,24 @@ const compile = modules => {
     )
     .pipe(gulp.dest(modules === false ? esDir : libDir));
 
-  return merge2([less, js]);
+  const dts = tsResult.dts.pipe(gulp.dest(modules === false ? esDir : libDir));
+
+  return merge2([less, js, dts]);
 };
 
-gulp.task('compile-with-es', done => {
-  console.log('[Parallel] Compile to es...');
-  compile(false).on('finish', done);
+gulp.task("compile-with-es", done => {
+  console.log("[Parallel] Compile to es...");
+  compile(false).on("finish", done);
 });
 
-gulp.task('compile-with-lib', done => {
-  console.log('[Parallel] Compile to js...');
-  compile().on('finish', done);
+gulp.task("compile-with-lib", done => {
+  console.log("[Parallel] Compile to js...");
+  compile().on("finish", done);
 });
 
-gulp.task('watch', function() {
+gulp.task("watch", function() {
   // 实时监听
-  gulp.watch('src/**/*.*', gulp.series('compile-with-es', 'compile-with-lib'));
+  gulp.watch("src/**/*.*", gulp.series("compile-with-es", "compile-with-lib"));
 });
 
-gulp.task('default', gulp.series('compile-with-es', 'compile-with-lib'));
+gulp.task("default", gulp.series("compile-with-es", "compile-with-lib"));
