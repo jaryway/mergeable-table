@@ -9,4 +9,4 @@ yarn-error.log*?
 *error.log*
 
 *.*test.*
-dist
+gh_dist
