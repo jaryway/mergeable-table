@@ -11,7 +11,46 @@
  * ↓
  * row
  */
-import { Cell, Range } from "./index.d";
+
+export type Range = [number, number, number, number];
+export type Cell = [number, number];
+export interface Element {
+  row: number;
+  col: number;
+  rowSpan: number;
+  colSpan: number;
+}
+
+// [row,col,rowSpan,colSpan]
+export type SelectedCell = [number, number, number?, number?];
+
+export enum MOUSE {
+  UP,
+  DOWN
+}
+
+export enum BUTTON_CODE {
+  LEFT,
+  MIDDLE,
+  RIGHT
+}
+
+export interface MergeableTableValueProps {
+  elements: Element[];
+  rows: number;
+  cols: number;
+  style: any;
+}
+
+export interface MergeableTableProps {
+  showHeader: boolean;
+  forwardedRef: any;
+  className?: string;
+  defaultValue?: any;
+  value?: any;
+  onChange?: (v: any) => void;
+  children?: any;
+}
 
 const letters = "ABCDEFGHIJKLMNOPQRSTYVWXYZ".split("");
 export function getHeadChar(index: number): string {

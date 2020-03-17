@@ -27,8 +27,8 @@ import classnames from "classnames"; // import { Dropdown, Menu } from "antd";
 import Dropdown from "rc-dropdown";
 import Menu, { MenuItem, Divider } from "rc-menu";
 import useTable from "./hooks/useTable";
-import { getHeadChar } from "./helper";
-import { BUTTON_CODE } from "./index.d";
+import { getHeadChar, BUTTON_CODE } from "./helper"; // import { BUTTON_CODE, MergeableTableProps, Element, Range } from "./index.d";
+
 import "rc-dropdown/assets/index.css";
 import "./style";
 

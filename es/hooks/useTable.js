@@ -12,8 +12,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 import { useCallback, useState, useEffect } from "react";
 import update from "immutability-helper";
-import { getMaxRange } from "../helper";
-import { MOUSE } from "../index.d";
+import { getMaxRange, MOUSE } from "../helper";
 /**
  * 获取已合并单元格和占位单元格
  * @param elements

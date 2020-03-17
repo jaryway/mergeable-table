@@ -1,8 +1,13 @@
 import { useCallback, useState, useEffect } from "react";
 import update from "immutability-helper";
-import { getMaxRange } from "../helper";
-
-import { Cell, Range, SelectedCell, MOUSE, Element } from "../index.d";
+import {
+  getMaxRange,
+  Cell,
+  Range,
+  SelectedCell,
+  MOUSE,
+  Element
+} from "../helper";
 
 /**
  * 获取已合并单元格和占位单元格

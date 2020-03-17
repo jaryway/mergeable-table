@@ -1,4 +1,4 @@
-import { Range, SelectedCell, MOUSE } from "../index.d";
+import { Range, SelectedCell, MOUSE } from "../helper";
 declare const useTable: (data: any, onChange: any) => {
     mouse: MOUSE;
     mergeds: any;

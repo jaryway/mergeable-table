@@ -6,6 +6,34 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+/**
+ * ----------------------------------→ col
+ * |
+ * |
+ * |
+ * |
+ * |
+ * |
+ * |
+ * |
+ * ↓
+ * row
+ */
+export var MOUSE;
+
+(function (MOUSE) {
+  MOUSE[MOUSE["UP"] = 0] = "UP";
+  MOUSE[MOUSE["DOWN"] = 1] = "DOWN";
+})(MOUSE || (MOUSE = {}));
+
+export var BUTTON_CODE;
+
+(function (BUTTON_CODE) {
+  BUTTON_CODE[BUTTON_CODE["LEFT"] = 0] = "LEFT";
+  BUTTON_CODE[BUTTON_CODE["MIDDLE"] = 1] = "MIDDLE";
+  BUTTON_CODE[BUTTON_CODE["RIGHT"] = 2] = "RIGHT";
+})(BUTTON_CODE || (BUTTON_CODE = {}));
+
 var letters = "ABCDEFGHIJKLMNOPQRSTYVWXYZ".split("");
 export function getHeadChar(index) {
   // 28 => AC
