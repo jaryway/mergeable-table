@@ -1,17 +1,17 @@
-process.env.BABEL_ENV = "development";
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+// process.env.BABEL_ENV = "production";
 // process.env.NODE_ENV = 'production';
 
 // const fs = require("fs");
 // const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  mode: process.env.BABEL_ENV,
+  mode: "production",
   entry: "./example/index.js",
   output: {
     filename: "main.js"
   },
-  devtool: "cheap-module-source-map",
+  // devtool: "cheap-module-source-map",
   devServer: {
     contentBase: "./example/public",
     port: 4000,
@@ -22,6 +22,9 @@ module.exports = {
   resolve: {
     modules: ["node_modules"],
     extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
+  },
+  optimization: {
+    runtimeChunk: true
   },
   module: {
     rules: [
@@ -53,6 +56,7 @@ module.exports = {
             exclude: /node_modules/,
             loader: "babel-loader",
             options: {
+              sourceMaps: false,
               presets: [
                 "@babel/preset-env",
                 "@babel/preset-react",
@@ -72,6 +76,7 @@ module.exports = {
             use: {
               loader: "babel-loader",
               options: {
+                sourceMaps: false,
                 presets: [
                   "@babel/preset-env",
                   "@babel/preset-react",
