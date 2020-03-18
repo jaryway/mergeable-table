@@ -250,8 +250,6 @@ export default React.forwardRef<any, MergeableTableProps>(
     if (value === undefined)
       return <Uncontrolled {...rest} forwardedRef={ref} />;
 
-    return (
-      <MergeableTable showHeader={false} value={value} forwardedRef={ref} />
-    );
+    return <MergeableTable {...rest} value={value} forwardedRef={ref} />;
   }
 );

@@ -22,13 +22,11 @@ var __rest = this && this.__rest || function (s, e) {
 };
 
 import React, { useState, useCallback, useMemo } from "react";
-import classnames from "classnames"; // import { Dropdown, Menu } from "antd";
-
+import classnames from "classnames";
 import Dropdown from "rc-dropdown";
 import Menu, { MenuItem, Divider } from "rc-menu";
 import useTable from "./hooks/useTable";
-import { getHeadChar, BUTTON_CODE } from "./helper"; // import { BUTTON_CODE, MergeableTableProps, Element, Range } from "./index.d";
-
+import { getHeadChar, BUTTON_CODE } from "./helper";
 import "rc-dropdown/assets/index.css";
 import "./style";
 
@@ -37,8 +35,6 @@ var getWidth = function getWidth(v) {
 };
 
 function getIsPlaceholder(row, col, mergeds) {
-  // console.log("getIsPlaceholder000");
-  // 合并区域内除了第一个，其他的都是空白
   return mergeds.some(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 4),
         r0 = _ref2[0],
@@ -109,12 +105,8 @@ function MergeableTable(_a) {
         _selectedCells$$2 = _selectedCells$[3],
         colSpan = _selectedCells$$2 === void 0 ? 1 : _selectedCells$$2;
 
-    var cell = memoizedCell(row, col); // data.elements.find((m: any) => m.row === row && m.col === col) || {};
-    // const { rowSpan = 1, colSpan = 1 } = cell;
-    // console.log("memoizedOverlay",selectedCells, colSpan, rowSpan);
-
-    var hasSpan = rowSpan + colSpan > 2; // 是否选中了多个单元格，选中了多个单元格后拆分单元格不能使用
-
+    var cell = memoizedCell(row, col);
+    var hasSpan = rowSpan + colSpan > 2;
     var canMergeCell = selectedCells.length > 1;
     var canSplitCell = selectedCells.length === 1 && hasSpan;
     return React.createElement(Menu, {
@@ -123,7 +115,6 @@ function MergeableTable(_a) {
       },
       onClick: function onClick(_ref3) {
         var key = _ref3.key;
-        // console.log("key", key, actions);
         actions[key](cell);
       }
     }, React.createElement(MenuItem, {
@@ -151,10 +142,8 @@ function MergeableTable(_a) {
     }, "\u6E05\u7A7A\u9009\u62E9"));
   }, [actions, selectedCells, data]);
   var memoizedIsPlaceholder = useCallback(function (row, col) {
-    return getIsPlaceholder(row, col, mergeds); // const deps = [row, col, mergeds];
-    // return useMemo(() => getIsPlaceholder(row, col, mergeds), deps);
-  }, [mergeds]); // console.log("selectedRange", selection, selectedCells);
-
+    return getIsPlaceholder(row, col, mergeds);
+  }, [mergeds]);
   var rows = Array.apply(null, {
     length: data.rows
   }).map(function (_, i) {
@@ -183,8 +172,7 @@ function MergeableTable(_a) {
       key: i
     }, cols.map(function (j) {
       var cell = memoizedCell(i, j);
-      var isPlaceholder = memoizedIsPlaceholder(i, j); // 占位单元格不渲染
-
+      var isPlaceholder = memoizedIsPlaceholder(i, j);
       if (isPlaceholder) return null;
       var _cell$colSpan = cell.colSpan,
           colSpan = _cell$colSpan === void 0 ? 1 : _cell$colSpan,
@@ -192,8 +180,7 @@ function MergeableTable(_a) {
           rowSpan = _cell$rowSpan === void 0 ? 1 : _cell$rowSpan;
       var selected = memoizedIsSelected(i, j);
 
-      var _onCellMouseLeftDown = onCellMouseLeftDown(i, j); // console.log("children: cell.children,", colSpan, rowSpan);
-
+      var _onCellMouseLeftDown = onCellMouseLeftDown(i, j);
 
       var colWidth = getWidth((data.style || {})[j]);
       var colStyle = colWidth ? {
@@ -214,8 +201,7 @@ function MergeableTable(_a) {
         onMouseUp: onCellMouseUp,
         onMouseDown: function onMouseDown(e) {
           e.preventDefault();
-          e.stopPropagation(); // 当前已经选中，并且是右键操作直接显示右键菜单
-
+          e.stopPropagation();
           if (selected && e.button === BUTTON_CODE.RIGHT) return;
 
           _onCellMouseLeftDown(e);
@@ -253,9 +239,8 @@ export default React.forwardRef(function (_a, ref) {
   if (value === undefined) return React.createElement(Uncontrolled, _extends({}, rest, {
     forwardedRef: ref
   }));
-  return React.createElement(MergeableTable, {
-    showHeader: false,
+  return React.createElement(MergeableTable, _extends({}, rest, {
     value: value,
     forwardedRef: ref
-  });
+  }));
 });

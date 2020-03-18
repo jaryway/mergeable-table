@@ -56,7 +56,6 @@ function MergeableTablePreview(_a) {
     return React.createElement("tr", {
       key: i
     }, cols.map(function (j) {
-      // const key = getKey(i, j);
       var cell = memoizedCell(i, j);
       var _cell$colSpan = cell.colSpan,
           colSpan = _cell$colSpan === void 0 ? 1 : _cell$colSpan,
@@ -65,8 +64,7 @@ function MergeableTablePreview(_a) {
       var colWidth = getWidth((data.style || {})[j]);
       var colStyle = colWidth ? {
         width: colWidth
-      } : {}; // console.log("xxxxxxxx0", i, j);
-
+      } : {};
       return React.createElement("td", _extends({
         style: _extends({}, colStyle),
         "data-id": cell.id,

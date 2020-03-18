@@ -13,10 +13,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 import { useCallback, useState, useEffect } from "react";
 import update from "immutability-helper";
 import { getMaxRange, MOUSE } from "../helper";
-/**
- * 获取已合并单元格和占位单元格
- * @param elements
- */
 
 function getMergeds(elements) {
   return elements.filter(function (m) {
@@ -48,7 +44,7 @@ function getCellRange(cell, mergeds) {
 }
 
 function range2Cells(range, mergeds) {
-  if (!range || !range.length) return []; // console.log("range2Cells", range);
+  if (!range || !range.length) return [];
 
   var _range = _slicedToArray(range, 4),
       r0 = _range[0],
@@ -78,10 +74,9 @@ function range2Cells(range, mergeds) {
             col1 = _ref9[3];
 
         return row >= row0 && row <= row1 && _col >= col0 && _col <= col1;
-      }); // 如果单元格在合并的区域内，只 push 第一个单元格
+      });
 
       if (match) {
-        // console.log("selectedCells-match", row, col);
         var _match = _slicedToArray(match, 4),
             row0 = _match[0],
             col0 = _match[1],
@@ -113,8 +108,7 @@ var useTable = function useTable(data, onChange) {
   var _useState = useState(MOUSE.UP),
       _useState2 = _slicedToArray(_useState, 2),
       mouse = _useState2[0],
-      setMouse = _useState2[1]; // 鼠标单击状态
-
+      setMouse = _useState2[1];
 
   var _useState3 = useState({
     mergeds: []
@@ -126,44 +120,33 @@ var useTable = function useTable(data, onChange) {
   var _useState5 = useState([]),
       _useState6 = _slicedToArray(_useState5, 2),
       selection = _useState6[0],
-      setSelection = _useState6[1]; // 选中的开始单元格和结束单元格
-
+      setSelection = _useState6[1];
 
   var _useState7 = useState([]),
       _useState8 = _slicedToArray(_useState7, 2),
       selectedCells = _useState8[0],
-      setSelectedCells = _useState8[1]; // 选中的要高亮的单元格
-
+      setSelectedCells = _useState8[1];
 
   var _useState9 = useState([]),
       _useState10 = _slicedToArray(_useState9, 2),
       selectedRange = _useState10[0],
-      setSelectedRange = _useState10[1]; // 当前选中的区域
+      setSelectedRange = _useState10[1];
 
-
-  var mergeds = state.mergeds; // elements 发生变化，重新生成 mergeds、placeholders
-
+  var mergeds = state.mergeds;
   useEffect(function () {
-    var _mergeds = getMergeds(data.elements); // const _placeholders = mergeds2Placeholders(_mergeds);
-    // console.log("reset-getMergeds");
-
+    var _mergeds = getMergeds(data.elements);
 
     setState(function (prev) {
       return _extends(_extends({}, prev), {
         mergeds: _mergeds
       });
     });
-  }, [data.elements]); // 选区发生变化=> 改变选中的单元格
-
+  }, [data.elements]);
   useEffect(function () {
-    // console.log("selectedCells", { selectedRange, selectedCells });
-    // if (!selectedRange.length) return;
     setSelectedCells(selectedRange.length ? range2Cells(selectedRange, mergeds) : []);
   }, [selectedRange, mergeds]);
   var onCellMouseLeftDown = useCallback(function (i, j) {
     return function (_e) {
-      // 鼠标点击后，确定开始坐标
-      // console.log("onCellMouseLeftDown", i, j);
       var startRange = getCellRange([i, j], mergeds);
       setSelection(function () {
         return [i, j];
@@ -171,18 +154,15 @@ var useTable = function useTable(data, onChange) {
       setSelectedRange(startRange);
       setMouse(MOUSE.DOWN);
     };
-  }, [mergeds]); // console.log("selectedCells", { selectedRange, selectedCells });
-
+  }, [mergeds]);
   var onCellMouseOver = useCallback(function (r1, c1) {
     return function () {
-      //
       if (mouse !== MOUSE.DOWN) return false;
       if (!selection.length) return false;
 
       var _selection = _slicedToArray(selection, 2),
           r0 = _selection[0],
-          c0 = _selection[1]; // 比较大小，避免从右到左选择合并不对的情况
-
+          c0 = _selection[1];
 
       var _ref10 = r0 < r1 ? [r0, r1] : [r1, r0],
           _ref11 = _slicedToArray(_ref10, 2),
@@ -192,20 +172,18 @@ var useTable = function useTable(data, onChange) {
       var _ref12 = c0 < c1 ? [c0, c1] : [c1, c0],
           _ref13 = _slicedToArray(_ref12, 2),
           col0 = _ref13[0],
-          col1 = _ref13[1]; // 同一个选中的局域返回
-
+          col1 = _ref13[1];
 
       if (r0 === r1 && c0 === c1) return;
       var nextRange = getMaxRange([row0, col0, row1, col1], mergeds);
       setSelectedRange(nextRange);
-      setSelection([r0, c0, row1, col1]); // setSelectedCells(range2Cells(nextRange));
+      setSelection([r0, c0, row1, col1]);
     };
   }, [mergeds, mouse, selection]);
 
   var onCellMouseUp = function onCellMouseUp() {
     return setMouse(MOUSE.UP);
-  }; // 合并单元格
-
+  };
 
   var onMergeCell = useCallback(function () {
     if (selectedRange.length != 4) return;
@@ -228,13 +206,6 @@ var useTable = function useTable(data, onChange) {
 
     var rowSpan = row1 - row0;
     var colSpan = col1 - col0;
-    /**
-     * 合并后，如果的目标单元格，没有在 data 中，则插入一条数据，记录单元格的合并情况
-     *  同时，被合并的单元格，如果在 data 中有数据则要删除
-     */
-    // console.log("onMergeCell", row0, row1, rowSpan, colSpan);
-    // 删除合并范围内的单元格
-
     var nextData = data.elements.filter(function (_ref18) {
       var row = _ref18.row,
           col = _ref18.col;
@@ -242,19 +213,17 @@ var useTable = function useTable(data, onChange) {
     });
     var i = nextData.findIndex(function (m) {
       return m.row === row0 && m.col === col0;
-    }); // 更新 rowSpan、colSpan
+    });
 
     var next = _extends(_extends({}, rowSpan >= 1 ? {
       rowSpan: rowSpan + 1
     } : {}), colSpan >= 1 ? {
       colSpan: colSpan + 1
-    } : {}); // 目标单元格，已经存在，更新 rowSpan、colSpan
-
+    } : {});
 
     var command = i > -1 ? _defineProperty({}, i, {
       $merge: next
     }) : {
-      // 目标单元格，没有在 data 中，插入一条数据
       $push: [_extends({
         row: row0,
         col: col0
@@ -268,9 +237,7 @@ var useTable = function useTable(data, onChange) {
     onChange && onChange(changedValue);
     setSelection([]);
     setSelectedRange([]);
-  }, [data, selectedRange]); // console.log("onSplitCell", data.elements);
-  // 拆分单元格
-
+  }, [data, selectedRange]);
   var onSplitCell = useCallback(function () {
     var _selectedRange2 = _slicedToArray(selectedRange, 2),
         row = _selectedRange2[0],
@@ -299,26 +266,18 @@ var useTable = function useTable(data, onChange) {
     onChange && onChange(changedValue);
     setSelection([]);
     setSelectedRange([]);
-  }, [data, selectedRange]); // console.log("selection", data.elements);
-  // 添加行，从选区最小的行上方添加一行
-
+  }, [data, selectedRange]);
   var onAddRow = useCallback(function () {
-    // console.log("onAddRow", selectedRange);
-    // 没有选中区域，返回
     if (selectedRange.length <= 0) return;
-    /**
-     * 执行data.rows + 1；同时要把 data.elements 中，当前后行及行后的数据的 row + 1;
-     */
 
     var _selectedRange3 = _slicedToArray(selectedRange, 1),
         row = _selectedRange3[0];
 
-    if (row === undefined) return; // console.log("onAddRow", selectedRange, row);
+    if (row === undefined) return;
 
     var changedValue = _extends(_extends({}, data), {
       rows: data.rows + 1,
       elements: data.elements.map(function (item) {
-        // 当前后的数据的 row + 1;
         if (item.row < row) return item;
         return _extends(_extends({}, item), {
           row: item.row + 1
@@ -328,14 +287,9 @@ var useTable = function useTable(data, onChange) {
 
     setSelectedRange([]);
     onChange && onChange(changedValue);
-  }, [data, selectedRange]); // 添加列，既向选中的单元格左侧添加一列
-
+  }, [data, selectedRange]);
   var onAddCol = useCallback(function () {
-    // 没有选中区域，返回
     if (selectedRange.length < 1) return;
-    /**
-     * 执行 cols + 1；同时要把 data.elements 中，当前后行及行后的数据的 col + 1;
-     */
 
     var _selectedRange4 = _slicedToArray(selectedRange, 2),
         col = _selectedRange4[1];
@@ -345,7 +299,6 @@ var useTable = function useTable(data, onChange) {
     var changedValue = _extends(_extends({}, data), {
       cols: data.cols + 1,
       elements: data.elements.map(function (item) {
-        // 当前后的数据的 row + 1;
         if (item.col < col) return item;
         return _extends(_extends({}, item), {
           col: item.col + 1
@@ -355,14 +308,9 @@ var useTable = function useTable(data, onChange) {
 
     setSelectedRange([]);
     onChange && onChange(changedValue);
-  }, [data, selectedRange]); // 删除选中的行
-
+  }, [data, selectedRange]);
   var onDelRow = useCallback(function () {
-    // 没有选中区域，返回
     if (selectedRange.length < 1) return;
-    /**
-     * 执行 rows- rowSpan，移除 data 中相关数据，同时当前 row 后的数据的 row - rowSpan;
-     */
 
     var _selectedRange5 = _slicedToArray(selectedRange, 3),
         row0 = _selectedRange5[0],
@@ -385,14 +333,9 @@ var useTable = function useTable(data, onChange) {
     onChange && onChange(changedValue);
     setSelection([]);
     setSelectedRange([]);
-  }, [data, selectedRange]); // 删除选中的列
-
+  }, [data, selectedRange]);
   var onDelCol = useCallback(function () {
-    // 没有选中区域，返回
     if (selectedRange.length < 1) return;
-    /**
-     * 执行 cols - colSpan ，移除 data 中相关数据，同时当前 col 后的数据的 col - colSpan;
-     */
 
     var _selectedRange6 = _slicedToArray(selectedRange, 4),
         col0 = _selectedRange6[1],
@@ -414,8 +357,7 @@ var useTable = function useTable(data, onChange) {
 
     onChange && onChange(changedValue);
     setSelection([]);
-  }, [data, selectedRange]); // 清楚选中
-
+  }, [data, selectedRange]);
   var onClean = useCallback(function () {
     setSelection([]);
     setSelectedRange([]);
