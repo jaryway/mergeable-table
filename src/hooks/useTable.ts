@@ -230,7 +230,7 @@ const useTable = (data: any, onChange: any) => {
       rows: data.rows + 1,
       elements: data.elements.map((item: Element) => {
         // 当前后的数据的 row + 1;
-        if (item.row < row) return item;
+        if (item.row <= row) return item;
         return { ...item, row: item.row + 1 };
       })
     };
@@ -256,7 +256,7 @@ const useTable = (data: any, onChange: any) => {
       cols: data.cols + 1,
       elements: data.elements.map((item: Element) => {
         // 当前后的数据的 row + 1;
-        if (item.col < col) return item;
+        if (item.col <= col) return item;
         return { ...item, col: item.col + 1 };
       })
     };
