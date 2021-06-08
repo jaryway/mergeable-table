@@ -14,5 +14,12 @@ a mergeable table
 
 2、Run npm publish.
 
+### Demo
+
+[demo](https://jaryway.github.io/mergeable-table/)
+
+### Licence
+
+MIT
 
 yarn add --peer @types/react @types/react-dom antd react react-dom
