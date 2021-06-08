@@ -25,7 +25,10 @@
   },
   "author": "jaryway",
   "license": "ISC",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
@@ -76,20 +79,18 @@
     "webpack": "^4.41.1",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.10.3",
-    "webpack-filter-warnings-plugin": "^1.2.1"
-  },
-  "dependencies": {
-    "@types/classnames": "^2.2.9",
-    "@types/react-dom": "^16.9.5",
-    "classnames": "^2.2.6",
+    "webpack-filter-warnings-plugin": "^1.2.1",
+    "jest": "^25.1.0",
     "eslint": "^6.8.0",
     "gulp-typescript": "^5.0.1",
+    "typescript": "^3.6.4",
+    "@types/classnames": "^2.2.9",
+    "@types/react-dom": "^16.9.5"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
     "immutability-helper": "^3.0.1",
-    "jest": "^25.1.0",
     "rc-dropdown": "^3.0.2",
-    "rc-menu": "^8.0.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "typescript": "^3.6.4"
+    "rc-menu": "^8.0.2"
   }
 }
