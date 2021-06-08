@@ -4,13 +4,13 @@ import MergeableTable, { Preview as MergeableTablePreview } from "../es/index";
 // import "antd/dist/antd.css";
 
 function App() {
-  console.log('reac',React);
+  // console.log('reac',React);
   return (
     <div>
       <MergeableTable
         className="fregata-control"
         style={{ maxHeight: "100vh" }}
-        value={{
+        defaultValue={{
           id: "a0f0c78b1550f",
           type: "Table",
           name: "表格布局",
@@ -84,7 +84,7 @@ function App() {
           ]
         }}
         // showHeader={true}
-        onChange={v => console.log("xxx", v)}
+        // onChange={v => console.log("xxx", v)}
       />
       {/* <MergeableTablePreview
         className="fregata-control"
